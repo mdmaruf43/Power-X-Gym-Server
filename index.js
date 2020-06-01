@@ -28,6 +28,40 @@ app.get('/products', (req, res) => {
     });
 });
 
+app.get('/category', (req, res) => {
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("powerXgymStore").collection("category");
+        collection.find().toArray((err, documents) => {
+            if(err){
+                console.log(err)
+                res.status(500).send({message: err});
+            }
+            else{
+                res.send(documents);
+            }
+        });
+        client.close();
+    });
+});
+
+app.get('/allMembershipInformation', (req, res) => {
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("powerXgymStore").collection("membershipInformation");
+        collection.find().toArray((err, documents) => {
+            if(err){
+                console.log(err)
+                res.status(500).send({message: err});
+            }
+            else{
+                res.send(documents);
+            }
+        });
+        client.close();
+    });
+});
+
 
 app.post('/addProduct', (req, res) => {
     //save to database
@@ -42,6 +76,26 @@ app.post('/addProduct', (req, res) => {
             }
             else{
                 res.send(result.ops[0]);
+            }
+        });
+        client.close();
+    });
+})
+
+app.post('/membershipInformation', (req, res) => {
+    const information = req.body;
+    information.appointmentTime = new Date();
+    console.log(information);
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("powerXgymStore").collection("membershipInformation");
+        collection.insert(information, (err, result) => {
+            if(err){
+                console.log(err)
+                res.status(500).send({message: err});
+            }
+            else{
+                res.send(result.ops[0])
             }
         });
         client.close();
